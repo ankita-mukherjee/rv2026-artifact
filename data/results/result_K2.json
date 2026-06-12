@@ -1,0 +1,71 @@
+﻿{
+  "case_id": "K2",
+  "project": "kafka",
+  "smell": "LIC",
+  "issue": "KAFKA-13630-RecordAccumulator-LIC",
+  "expected": "REJECT",
+  "N": 8,
+  "k": 2,
+  "T_base": 651602.5,
+  "S_base": 19.765,
+  "c_thr": 586442.25,
+  "c_sev": 197.65,
+  "clean_throughputs": [
+    729820,
+    647948,
+    654165,
+    662135,
+    649126,
+    609211,
+    654079,
+    607287
+  ],
+  "clean_severities": [
+    22.66,
+    18.54,
+    15.91,
+    21.64,
+    14.4,
+    20.99,
+    12.97,
+    25.26
+  ],
+  "buggy_throughputs": [
+    631898,
+    558597,
+    623364,
+    577901,
+    649294,
+    585115,
+    604619,
+    624584
+  ],
+  "buggy_severities": [
+    23.27,
+    29.44,
+    13.84,
+    17.23,
+    14.75,
+    20.32,
+    19.78,
+    20.25
+  ],
+  "margins": [
+    174.38,
+    -27845.25,
+    183.81,
+    -8541.25,
+    182.9,
+    -1327.25,
+    177.87,
+    177.4
+  ],
+  "buggy_r_low": -8541.25,
+  "buggy_r_high": 182.9,
+  "verdict_ours": "ABSTAIN",
+  "verdict_threshold": "REJECT",
+  "verdict_percentile": "REJECT",
+  "verdict_ewma": "ACCEPT",
+  "verdict_cusum": "REJECT",
+  "verdict_changepoint": "ACCEPT"
+}

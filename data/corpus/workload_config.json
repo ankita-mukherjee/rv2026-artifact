@@ -1,0 +1,56 @@
+{
+  "description": "Workload configurations used in Table 2 of the paper. Each episode runs 60s after a 30s warm-up discard. N=8 episodes per verdict.",
+  "subjects": {
+    "cassandra": {
+      "version": "4.1.x",
+      "tool": "cassandra-stress",
+      "threads": 50,
+      "episode_duration_s": 60,
+      "warmup_discard_s": 30,
+      "jvm_flags": "-XX:+FlightRecorder -XX:StartFlightRecording=settings=rv2026.jfc,dumponexit=true",
+      "jfr_buffer_global_mb": 256,
+      "jfr_buffer_thread_mb": 16,
+      "example_command": "cassandra-stress write n=5000000 -rate threads=50 -jvm-args '-XX:+FlightRecorder -XX:StartFlightRecording=filename=out.jfr,settings=rv2026.jfc,dumponexit=true'"
+    },
+    "kafka": {
+      "version": "3.x",
+      "tool": "kafka-producer-perf-test",
+      "threads": 32,
+      "episode_duration_s": 60,
+      "warmup_discard_s": 30,
+      "jvm_flags": "-XX:+FlightRecorder -XX:StartFlightRecording=settings=rv2026.jfc,dumponexit=true",
+      "jfr_buffer_global_mb": 256,
+      "jfr_buffer_thread_mb": 16,
+      "example_command": "kafka-producer-perf-test --topic test --num-records 1000000 --record-size 1024 --throughput -1 --producer-props bootstrap.servers=localhost:9092"
+    },
+    "jetty": {
+      "version": "12.x",
+      "tool": "wrk2",
+      "connections": 400,
+      "episode_duration_s": 60,
+      "warmup_discard_s": 30,
+      "jvm_flags": "-XX:+FlightRecorder -XX:StartFlightRecording=settings=rv2026.jfc,dumponexit=true",
+      "jfr_buffer_global_mb": 256,
+      "jfr_buffer_thread_mb": 16,
+      "example_command": "wrk2 -t4 -c400 -d60s -R10000 http://localhost:8080/"
+    },
+    "hbase": {
+      "version": "2.5.x",
+      "tool": "PerformanceEvaluation",
+      "threads": 64,
+      "episode_duration_s": 60,
+      "warmup_discard_s": 30,
+      "jvm_flags": "-XX:+FlightRecorder -XX:StartFlightRecording=settings=rv2026.jfc,dumponexit=true",
+      "jfr_buffer_global_mb": 256,
+      "jfr_buffer_thread_mb": 16,
+      "example_command": "hbase pe --nomapred --rows=100000 --oneCon=true randomRead 64"
+    }
+  },
+  "verdict_parameters": {
+    "N": 8,
+    "k": 2,
+    "coverage_at_N8_k2": 0.9297,
+    "calibration_rule": "3xMAD",
+    "calibration_note": "Thresholds derived from N clean episodes of fixing commit: T_base=median(clean_throughputs), c_thr=T_base - 3*MAD(clean_throughputs)"
+  }
+}

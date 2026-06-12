@@ -1,0 +1,1296 @@
+{
+  "total_pairs": 30,
+  "distribution": {
+    "cassandra": 8,
+    "hbase": 7,
+    "jetty": 7,
+    "kafka": 8
+  },
+  "pattern_counts": {
+    "SM": 18,
+    "OS": 2,
+    "UL": 3,
+    "LIC": 5,
+    "LOC": 2
+  },
+  "fault_pairs": [
+    {
+      "case_id": "C10",
+      "project": "cassandra",
+      "repo": "apache/cassandra",
+      "commit_message": "Reduce lock contention for collection types and serializers",
+      "fix_sha": "b9b63925f9b818637b986a300aee658df03a5500",
+      "buggy_sha": "a49cf2c6ccc8f269858958c86e2437429cd5ca59",
+      "dominant_pattern": "SM",
+      "all_smells": [
+        {
+          "pattern": "SM",
+          "detail": "class 'DynamicCompositeType' synchronized methods ['getInstance', 'getInstance']",
+          "file": "DynamicCompositeType.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/apache/cassandra/commit/b9b63925f9b818637b986a300aee658df03a5500",
+      "issue_url": "",
+      "files": [
+        "src/java/org/apache/cassandra/db/marshal/DynamicCompositeType.java",
+        "src/java/org/apache/cassandra/db/marshal/ListType.java",
+        "src/java/org/apache/cassandra/db/marshal/MapType.java",
+        "src/java/org/apache/cassandra/db/marshal/SetType.java",
+        "src/java/org/apache/cassandra/serializers/ListSerializer.java",
+        "src/java/org/apache/cassandra/serializers/MapSerializer.java"
+      ]
+    },
+    {
+      "case_id": "C11",
+      "project": "cassandra",
+      "repo": "apache/cassandra",
+      "commit_message": "Improve CompactionManager concurrency",
+      "fix_sha": "ed0a07c386658395803886ac5f1cf243cd413cbe",
+      "buggy_sha": "f8b3a15881c411ff766425084776e2339fe6a17b",
+      "dominant_pattern": "SM",
+      "all_smells": [
+        {
+          "pattern": "SM",
+          "detail": "class 'AbstractCompactionStrategy' synchronized methods ['pause', 'resume', 'replaceSSTables']",
+          "file": "AbstractCompactionStrategy.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "class 'CompactionStrategyManager' synchronized methods ['getNextBackgroundTask', 'resume', 'pause', 'maybeReload', 'reload', 'getSSTableCountPerLevel', 'handleNotification', 'getScanners', 'getScanners', 'setNewLocalCompactionStrategy']",
+          "file": "CompactionStrategyManager.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "class 'DateTieredCompactionStrategy' synchronized methods ['getNextBackgroundTask', 'getMaximalTask', 'getUserDefinedTask']",
+          "file": "DateTieredCompactionStrategy.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "class 'LeveledCompactionStrategy' synchronized methods ['getNextBackgroundTask', 'getMaximalTask']",
+          "file": "LeveledCompactionStrategy.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/apache/cassandra/commit/ed0a07c386658395803886ac5f1cf243cd413cbe",
+      "issue_url": "",
+      "files": [
+        "src/java/org/apache/cassandra/db/compaction/AbstractCompactionStrategy.java",
+        "src/java/org/apache/cassandra/db/compaction/CompactionStrategyManager.java",
+        "src/java/org/apache/cassandra/db/compaction/DateTieredCompactionStrategy.java",
+        "src/java/org/apache/cassandra/db/compaction/LeveledCompactionStrategy.java",
+        "src/java/org/apache/cassandra/db/compaction/SizeTieredCompactionStrategy.java",
+        "src/java/org/apache/cassandra/notifications/SSTableRepairStatusChanged.java"
+      ]
+    },
+    {
+      "case_id": "C12",
+      "project": "cassandra",
+      "repo": "apache/cassandra",
+      "commit_message": "[CASSANDRA-16924] CEP-10 Phase 1: Mockable Blocking Concurrency Primitives",
+      "fix_sha": "e5b92e108851d2be81c43cbf982564f92d28aa6b",
+      "buggy_sha": "2e2db4dc40c4935305b9a2d5d271580e96dabe42",
+      "dominant_pattern": "OS",
+      "all_smells": [
+        {
+          "pattern": "SM",
+          "detail": "class 'SEPExecutor' synchronized methods ['shutdown', 'shutdownNow', 'setMaximumPoolSize']",
+          "file": "SEPExecutor.java"
+        },
+        {
+          "pattern": "OS",
+          "detail": "'executor': single-stmt sync — Atomic candidate",
+          "file": "Stage.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/apache/cassandra/commit/e5b92e108851d2be81c43cbf982564f92d28aa6b",
+      "issue_url": "",
+      "files": [
+        "src/java/org/apache/cassandra/cache/AutoSavingCache.java",
+        "src/java/org/apache/cassandra/concurrent/AbstractLocalAwareExecutorService.java",
+        "src/java/org/apache/cassandra/concurrent/JMXEnabledSingleThreadExecutor.java",
+        "src/java/org/apache/cassandra/concurrent/NamedThreadFactory.java",
+        "src/java/org/apache/cassandra/concurrent/SEPExecutor.java",
+        "src/java/org/apache/cassandra/concurrent/Stage.java"
+      ]
+    },
+    {
+      "case_id": "C5",
+      "project": "cassandra",
+      "repo": "apache/cassandra",
+      "commit_message": "fix race condition in PendingRepairManager",
+      "fix_sha": "6a7fad6011dcc586344334c95aa9601477b9c5a3",
+      "buggy_sha": "5ccbebaf85b61673bb8c34b1f435d730183587ee",
+      "dominant_pattern": "SM",
+      "all_smells": [
+        {
+          "pattern": "SM",
+          "detail": "class 'PendingRepairManager' has synchronized methods ['removeSession', 'removeSSTable', 'addSSTable', 'replaceSSTables', 'startup', 'shutdown', 'enable', 'disable', 'getNumPendingRepairFinishedTasks', 'getNextRepairFinishedTask', 'getNextBackgroundTask', 'getMaximalTasks', 'getSSTableCountPerLevel', 'getScanners']",
+          "file": "PendingRepairManager.java"
+        },
+        {
+          "pattern": "LIC",
+          "detail": "synchronized method 'removeSSTable' contains a loop",
+          "file": "PendingRepairManager.java"
+        },
+        {
+          "pattern": "LIC",
+          "detail": "synchronized method 'replaceSSTables' contains a loop",
+          "file": "PendingRepairManager.java"
+        },
+        {
+          "pattern": "LIC",
+          "detail": "synchronized method 'getNumPendingRepairFinishedTasks' contains a loop",
+          "file": "PendingRepairManager.java"
+        },
+        {
+          "pattern": "LIC",
+          "detail": "synchronized method 'getNextRepairFinishedTask' contains a loop",
+          "file": "PendingRepairManager.java"
+        },
+        {
+          "pattern": "LIC",
+          "detail": "synchronized method 'getNextBackgroundTask' contains a loop",
+          "file": "PendingRepairManager.java"
+        },
+        {
+          "pattern": "LIC",
+          "detail": "synchronized method 'getMaximalTasks' contains a loop",
+          "file": "PendingRepairManager.java"
+        },
+        {
+          "pattern": "LIC",
+          "detail": "synchronized method 'getSSTableCountPerLevel' contains a loop",
+          "file": "PendingRepairManager.java"
+        },
+        {
+          "pattern": "LIC",
+          "detail": "synchronized method 'getScanners' contains a loop",
+          "file": "PendingRepairManager.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/apache/cassandra/commit/6a7fad6011dcc586344334c95aa9601477b9c5a3",
+      "issue_url": "",
+      "files": [
+        "src/java/org/apache/cassandra/db/compaction/PendingRepairManager.java"
+      ]
+    },
+    {
+      "case_id": "C6",
+      "project": "cassandra",
+      "repo": "apache/cassandra",
+      "commit_message": "Fix race condition bug during local session repair",
+      "fix_sha": "fd5e2ad74eff61e189c2abe87797c2690a45220c",
+      "buggy_sha": "0e249fd15ee209594e6d85db7e81a19c67d6ad6f",
+      "dominant_pattern": "SM",
+      "all_smells": [
+        {
+          "pattern": "SM",
+          "detail": "class 'LocalSessions' has synchronized methods ['start', 'stop', 'putSessionUnsafe', 'putSession', 'removeSession', 'deleteSession']",
+          "file": "LocalSessions.java"
+        },
+        {
+          "pattern": "LIC",
+          "detail": "synchronized method 'start' contains a loop",
+          "file": "LocalSessions.java"
+        },
+        {
+          "pattern": "LIC",
+          "detail": "synchronized block in 'setStateAndSave' contains a loop",
+          "file": "LocalSessions.java"
+        },
+        {
+          "pattern": "LOC",
+          "detail": "method 'failOngoingRepairs' has ForStatement containing synchronized block",
+          "file": "LocalSessions.java"
+        },
+        {
+          "pattern": "LOC",
+          "detail": "method 'cleanup' has ForStatement containing synchronized block",
+          "file": "LocalSessions.java"
+        },
+        {
+          "pattern": "UL",
+          "detail": "lock 'session' guards ['canTransitionTo', 'checkArgument', 'deleteSession', 'failSession', 'getState', 'info', 'isCompleted', 'isSuperseded', 'nowInSeconds', 'onIRStateChange', 'save', 'sendStatusRequest', 'sessionCompleted', 'sessionHasData', 'setLastUpdate', 'setState', 'setStateAndSave', 'shouldCheckStatus', 'shouldDelete', 'shouldFail', 'trace', 'warn'] across ['cleanup', 'failOngoingRepairs', 'failSession', 'setStateAndSave']",
+          "file": "LocalSessions.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/apache/cassandra/commit/fd5e2ad74eff61e189c2abe87797c2690a45220c",
+      "issue_url": "",
+      "files": [
+        "src/java/org/apache/cassandra/repair/consistent/LocalSessions.java"
+      ]
+    },
+    {
+      "case_id": "C7",
+      "project": "cassandra",
+      "repo": "apache/cassandra",
+      "commit_message": "Fix a race condition where a keyspace can be opened while it is being removed",
+      "fix_sha": "570732375e4186741388adb81afeab6f155f57b9",
+      "buggy_sha": "ab3b59ec42666d6fd3f92a26283e65b3d7f3aa4f",
+      "dominant_pattern": "SM",
+      "all_smells": [
+        {
+          "pattern": "SM",
+          "detail": "class 'DefaultSchemaUpdateHandler' has synchronized methods ['start', 'applyMutations', 'apply', 'reload', 'clear', 'getSchemaMutations']",
+          "file": "DefaultSchemaUpdateHandler.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "class 'Schema' has synchronized methods ['load', 'loadNew', 'reload', 'unload', 'updateVersion', 'clear', 'localDiff', 'mergeAndUpdateVersion']",
+          "file": "Schema.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/apache/cassandra/commit/570732375e4186741388adb81afeab6f155f57b9",
+      "issue_url": "",
+      "files": [
+        "src/java/org/apache/cassandra/db/Keyspace.java",
+        "src/java/org/apache/cassandra/schema/DefaultSchemaUpdateHandler.java",
+        "src/java/org/apache/cassandra/schema/Schema.java",
+        "test/distributed/org/apache/cassandra/distributed/test/SchemaTest.java",
+        "test/long/org/apache/cassandra/cql3/CorruptionTest.java",
+        "test/unit/org/apache/cassandra/ServerTestUtils.java",
+        "test/unit/org/apache/cassandra/audit/AuditLoggerAuthTest.java",
+        "test/unit/org/apache/cassandra/concurrent/DebuggableScheduledThreadPoolExecutorTest.java",
+        "test/unit/org/apache/cassandra/cql3/BatchTests.java",
+        "test/unit/org/apache/cassandra/cql3/CQLTester.java",
+        "test/unit/org/apache/cassandra/cql3/PagingTest.java",
+        "test/unit/org/apache/cassandra/metrics/BatchMetricsTest.java",
+        "test/unit/org/apache/cassandra/metrics/CQLMetricsTest.java",
+        "test/unit/org/apache/cassandra/metrics/ClientRequestMetricsTest.java",
+        "test/unit/org/apache/cassandra/metrics/KeyspaceMetricsTest.java",
+        "test/unit/org/apache/cassandra/metrics/TableMetricsTest.java",
+        "test/unit/org/apache/cassandra/schema/SchemaTest.java",
+        "test/unit/org/apache/cassandra/tools/nodetool/ClientStatsTest.java",
+        "test/unit/org/apache/cassandra/transport/CQLUserAuditTest.java"
+      ]
+    },
+    {
+      "case_id": "C8",
+      "project": "cassandra",
+      "repo": "apache/cassandra",
+      "commit_message": "Fix a race condition where a keyspace can be opened while it is being removed",
+      "fix_sha": "c1d89c32d27921d1f77f05d29ee248b8922a4c76",
+      "buggy_sha": "16be1ab073f6fac7df1ac838c7a89e862cf9f2e1",
+      "dominant_pattern": "SM",
+      "all_smells": [
+        {
+          "pattern": "SM",
+          "detail": "class 'DefaultSchemaUpdateHandler' has synchronized methods ['start', 'applyMutations', 'apply', 'reload', 'clear', 'getSchemaMutations']",
+          "file": "DefaultSchemaUpdateHandler.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "class 'Schema' has synchronized methods ['load', 'loadNew', 'reload', 'unload', 'updateVersion', 'clear', 'localDiff', 'mergeAndUpdateVersion']",
+          "file": "Schema.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/apache/cassandra/commit/c1d89c32d27921d1f77f05d29ee248b8922a4c76",
+      "issue_url": "",
+      "files": [
+        "src/java/org/apache/cassandra/db/Keyspace.java",
+        "src/java/org/apache/cassandra/schema/DefaultSchemaUpdateHandler.java",
+        "src/java/org/apache/cassandra/schema/Schema.java",
+        "test/distributed/org/apache/cassandra/distributed/test/SchemaTest.java",
+        "test/long/org/apache/cassandra/cql3/CorruptionTest.java",
+        "test/unit/org/apache/cassandra/ServerTestUtils.java",
+        "test/unit/org/apache/cassandra/audit/AuditLoggerAuthTest.java",
+        "test/unit/org/apache/cassandra/concurrent/DebuggableScheduledThreadPoolExecutorTest.java",
+        "test/unit/org/apache/cassandra/cql3/BatchTests.java",
+        "test/unit/org/apache/cassandra/cql3/CQLTester.java",
+        "test/unit/org/apache/cassandra/cql3/PagingTest.java",
+        "test/unit/org/apache/cassandra/metrics/BatchMetricsTest.java",
+        "test/unit/org/apache/cassandra/metrics/CQLMetricsTest.java",
+        "test/unit/org/apache/cassandra/metrics/ClientRequestMetricsTest.java",
+        "test/unit/org/apache/cassandra/metrics/KeyspaceMetricsTest.java",
+        "test/unit/org/apache/cassandra/metrics/TableMetricsTest.java",
+        "test/unit/org/apache/cassandra/schema/SchemaTest.java",
+        "test/unit/org/apache/cassandra/tools/nodetool/ClientStatsTest.java",
+        "test/unit/org/apache/cassandra/transport/CQLUserAuditTest.java"
+      ]
+    },
+    {
+      "case_id": "C9",
+      "project": "cassandra",
+      "repo": "apache/cassandra",
+      "commit_message": "Allocate ReentrantLock on-demand in java11 AtomicBTreePartitionerBase",
+      "fix_sha": "7925f91dc842834c39504b5f9a68db9b5c9fd879",
+      "buggy_sha": "35750e80589e61dbef0c85f20691764a6c7c3f81",
+      "dominant_pattern": "SM",
+      "all_smells": [
+        {
+          "pattern": "SM",
+          "detail": "'acquireLock': lock() called, never unlock()",
+          "file": "AtomicBTreePartitionBase.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/apache/cassandra/commit/7925f91dc842834c39504b5f9a68db9b5c9fd879",
+      "issue_url": "",
+      "files": [
+        "src/java11/org/apache/cassandra/db/partitions/AtomicBTreePartitionBase.java"
+      ]
+    },
+    {
+      "case_id": "H1",
+      "project": "hbase",
+      "repo": "apache/hbase",
+      "commit_message": "HBASE-25998: Redo synchronization in SyncFuture (#3382)",
+      "fix_sha": "336d8464cce85a2bc1fc97384ce66e95120b0d6f",
+      "buggy_sha": "eb242be674aac4a107cea51731ca5af35d7e2c0f",
+      "dominant_pattern": "SM",
+      "all_smells": [
+        {
+          "pattern": "LOC",
+          "detail": "method 'attainSafePoint' has WhileStatement containing synchronized block",
+          "file": "FSHLog.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "class 'SyncFuture' has synchronized methods ['reset', 'toString', 'getTxid', 'isForceSync', 'setForceSync', 'done', 'get', 'isDone', 'isThrowable', 'getThrowable']",
+          "file": "SyncFuture.java"
+        },
+        {
+          "pattern": "LIC",
+          "detail": "synchronized method 'get' contains a loop",
+          "file": "SyncFuture.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/apache/hbase/commit/336d8464cce85a2bc1fc97384ce66e95120b0d6f",
+      "issue_url": "https://issues.apache.org/jira/browse/HBASE-25998",
+      "files": [
+        "hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/wal/AbstractFSWAL.java",
+        "hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/wal/AsyncFSWAL.java",
+        "hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/wal/FSHLog.java",
+        "hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/wal/SyncFuture.java",
+        "hbase-server/src/test/java/org/apache/hadoop/hbase/regionserver/wal/TestSyncFuture.java",
+        "hbase-server/src/test/java/org/apache/hadoop/hbase/regionserver/wal/TestSyncFutureCache.java"
+      ]
+    },
+    {
+      "case_id": "H2",
+      "project": "hbase",
+      "repo": "apache/hbase",
+      "commit_message": "HBASE-19866 TestRegionServerReportForDuty doesn't timeout",
+      "fix_sha": "5b93ea155652292ad06ee3df85e5944191eace9b",
+      "buggy_sha": "305da1098a9cfa06942542dd3c314d6732f13bc0",
+      "dominant_pattern": "SM",
+      "all_smells": [
+        {
+          "pattern": "SM",
+          "detail": "class 'RpcServer' has synchronized methods ['refreshAuthManager', 'authorize']",
+          "file": "RpcServer.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/apache/hbase/commit/5b93ea155652292ad06ee3df85e5944191eace9b",
+      "issue_url": "https://issues.apache.org/jira/browse/HBASE-19866",
+      "files": [
+        "hbase-server/src/main/java/org/apache/hadoop/hbase/ipc/RpcServer.java"
+      ]
+    },
+    {
+      "case_id": "H3",
+      "project": "hbase",
+      "repo": "apache/hbase",
+      "commit_message": "HBASE-27758 Inconsistent synchronization in MetricsUserSourceImpl (#5149)",
+      "fix_sha": "143e9b4ff6ab610481c62c6bf368a4c7bf94acb7",
+      "buggy_sha": "e5620e26a275052151865f30956aa33393542a4a",
+      "dominant_pattern": "UL",
+      "all_smells": [
+        {
+          "pattern": "UL",
+          "detail": "lock 'this' guards ['appendHisto', 'blockBytesScannedCount', 'deleteHisto', 'get', 'getHisto', 'incrementHisto', 'newCounter', 'newTimeHistogram', 'putHisto', 'removeMetric', 'replayHisto', 'scanTimeHisto'] across ['deregister', 'register', 'snapshot']",
+          "file": "MetricsUserSourceImpl.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/apache/hbase/commit/143e9b4ff6ab610481c62c6bf368a4c7bf94acb7",
+      "issue_url": "https://issues.apache.org/jira/browse/HBASE-27758",
+      "files": [
+        "hbase-hadoop-compat/src/main/java/org/apache/hadoop/hbase/regionserver/MetricsUserSourceImpl.java"
+      ]
+    },
+    {
+      "case_id": "H4",
+      "project": "hbase",
+      "repo": "apache/hbase",
+      "commit_message": "HBASE-17434 New Synchronization Scheme for Compaction Pipeline (Eshcar Hillel)",
+      "fix_sha": "1576269123f18c9eb21b04a800e81952ec52c04d",
+      "buggy_sha": "9cbeba6c3de3ac7dd9c031792c70abe32ba8a62b",
+      "dominant_pattern": "LIC",
+      "all_smells": [
+        {
+          "pattern": "LIC",
+          "detail": "synchronized block in 'flattenYoungestSegment' contains a loop",
+          "file": "CompactionPipeline.java"
+        },
+        {
+          "pattern": "UL",
+          "detail": "lock 'pipeline' guards ['add', 'addFirst', 'addMemstoreSize', 'count', 'debug', 'flatten', 'getCellsCount', 'getLast', 'getStoreSegments', 'getVersion', 'isDebugEnabled', 'isEmpty', 'size', 'suffix', 'swapSuffix', 'warn'] across ['flattenYoungestSegment', 'getSegments', 'getVersionedList', 'getVersionedTail', 'pushHead', 'swap']",
+          "file": "CompactionPipeline.java"
+        },
+        {
+          "pattern": "SL",
+          "detail": "mutable field 'pipeline' used as lock in ['flattenYoungestSegment', 'getSegments', 'getVersionedList', 'getVersionedTail', 'pushHead', 'swap']",
+          "file": "CompactionPipeline.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/apache/hbase/commit/1576269123f18c9eb21b04a800e81952ec52c04d",
+      "issue_url": "https://issues.apache.org/jira/browse/HBASE-17434",
+      "files": [
+        "hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/CompactingMemStore.java",
+        "hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/CompactionPipeline.java",
+        "hbase-server/src/test/java/org/apache/hadoop/hbase/io/TestHeapSize.java"
+      ]
+    },
+    {
+      "case_id": "H5",
+      "project": "hbase",
+      "repo": "apache/hbase",
+      "commit_message": "HBASE-23054 Remove synchronization block from MetaTableMetrics and fix LossyCounting algorithm",
+      "fix_sha": "836368189afa67cdf018026ae1c23264679a5a57",
+      "buggy_sha": "ef79b40e6e0705fa925f688d12840f32bd0e453a",
+      "dominant_pattern": "LIC",
+      "all_smells": [
+        {
+          "pattern": "LIC",
+          "detail": "synchronized block in 'registerLossyCountingMeterIfNotPresent' contains a loop",
+          "file": "MetaTableMetrics.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/apache/hbase/commit/836368189afa67cdf018026ae1c23264679a5a57",
+      "issue_url": "https://issues.apache.org/jira/browse/HBASE-23054",
+      "files": [
+        "hbase-server/src/main/java/org/apache/hadoop/hbase/coprocessor/MetaTableMetrics.java",
+        "hbase-server/src/main/java/org/apache/hadoop/hbase/util/LossyCounting.java",
+        "hbase-server/src/test/java/org/apache/hadoop/hbase/coprocessor/TestMetaTableMetrics.java",
+        "hbase-server/src/test/java/org/apache/hadoop/hbase/util/TestLossyCounting.java"
+      ]
+    },
+    {
+      "case_id": "H6",
+      "project": "hbase",
+      "repo": "apache/hbase",
+      "commit_message": "HBASE-25363 Improve performance of HFileLinkCleaner by using ReadWriteLock instead of synchronize",
+      "fix_sha": "56dd3eba81bd5d034aa6fb33e488116573306f9e",
+      "buggy_sha": "5016219d3c6aeb8049c3c6864427a3e653a14a07",
+      "dominant_pattern": "SM",
+      "all_smells": [
+        {
+          "pattern": "SM",
+          "detail": "class 'HFileLinkCleaner' has synchronized methods ['isFileDeletable', 'setConf']",
+          "file": "HFileLinkCleaner.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/apache/hbase/commit/56dd3eba81bd5d034aa6fb33e488116573306f9e",
+      "issue_url": "https://issues.apache.org/jira/browse/HBASE-25363",
+      "files": [
+        "hbase-server/src/main/java/org/apache/hadoop/hbase/master/cleaner/HFileLinkCleaner.java"
+      ]
+    },
+    {
+      "case_id": "H7",
+      "project": "hbase",
+      "repo": "apache/hbase",
+      "commit_message": "HBASE-20061 HStore synchronized member variable filesCompacting should be private",
+      "fix_sha": "f90b47e3b00eacfb6eaa0ae1fc1cbc5190dffa9f",
+      "buggy_sha": "bbbfeae25e9e2a8d91168ea19b09da40ed069c01",
+      "dominant_pattern": "LOC",
+      "all_smells": [
+        {
+          "pattern": "OS",
+          "detail": "method 'compactRecentForTestingAssumingDefaultPolicy' splits lock(s) ['filesCompacting']",
+          "file": "HStore.java"
+        },
+        {
+          "pattern": "LOC",
+          "detail": "method 'removeCompactedfiles' has ForStatement containing synchronized block",
+          "file": "HStore.java"
+        },
+        {
+          "pattern": "UL",
+          "detail": "lock 'filesCompacting' guards ['addAll', 'addToCompactingFiles', 'checkArgument', 'clear', 'compareAndSet', 'containsAll', 'copyOf', 'currentTime', 'delSfs', 'empty', 'filesCompactingClone', 'filesToCompact', 'forceSelect', 'get', 'getColumnFamilyName', 'getCompactPriority', 'getCoprocessorHost', 'getFiles', 'getRegionInfo', 'getRegionNameAsString', 'getRequest', 'getStoreFileComparator', 'getStoreFileManager', 'getStoreFileTtl', 'getStorefileCount', 'getStorefiles', 'getUnneededFiles', 'hasSelection', 'indexOf', 'isEmpty', 'isMajor', 'isOffPeak', 'isOffPeakHour', 'newArrayList', 'postCompactSelection', 'preCompactSelection', 'preSelect', 'removeAll', 'request', 'select', 'set', 'setDescription', 'setPriority', 'setTracker', 'size', 'sort', 'subList'] across ['compact', 'compactRecentForTestingAssumingDefaultPolicy', 'finishCompactionRequest', 'needsCompaction', 'removeUnneededFiles', 'replaceStoreFiles', 'requestCompaction']",
+          "file": "HStore.java"
+        },
+        {
+          "pattern": "SL",
+          "detail": "mutable field 'filesCompacting' used as lock in ['compact', 'compactRecentForTestingAssumingDefaultPolicy', 'finishCompactionRequest', 'needsCompaction', 'removeUnneededFiles', 'replaceStoreFiles', 'requestCompaction']",
+          "file": "HStore.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/apache/hbase/commit/f90b47e3b00eacfb6eaa0ae1fc1cbc5190dffa9f",
+      "issue_url": "https://issues.apache.org/jira/browse/HBASE-20061",
+      "files": [
+        "hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/HStore.java"
+      ]
+    },
+    {
+      "case_id": "J1",
+      "project": "jetty",
+      "repo": "jetty/jetty.project",
+      "commit_message": "Merge pull request #4803 from lorban/jetty-9.4.x-channel-recycling-h2",
+      "fix_sha": "ac97bc3b318330aba1cf319e684cb6671504088d",
+      "buggy_sha": "3998e657cc1e6ee835c7aeea678e516cfcfa8fdb",
+      "dominant_pattern": "UL",
+      "all_smells": [
+        {
+          "pattern": "UL",
+          "detail": "lock 'this' guards ['append', 'createLocalStream', 'frame', 'getAndAdd', 'getMetaData', 'getParentStreamId', 'getPriority', 'getStreamId', 'getWeight', 'isEndStream', 'isExclusive', 'priority', 'queued', 'setListener', 'streamId'] across ['newStream', 'push']",
+          "file": "HTTP2Session.java"
+        },
+        {
+          "pattern": "UL",
+          "detail": "lock 'this' guards ['offer', 'poll'] across ['offerHttpChannel', 'pollHttpChannel']",
+          "file": "HTTP2ServerConnection.java"
+        },
+        {
+          "pattern": "UL",
+          "detail": "lock 'this' guards ['callback', 'commit', 'failure', 'result', 'state'] across ['failed', 'getInvocationType', 'onIdleTimeout', 'start', 'succeeded']",
+          "file": "HttpTransportOverHTTP2.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/jetty/jetty.project/commit/ac97bc3b318330aba1cf319e684cb6671504088d",
+      "issue_url": "https://github.com/jetty/jetty.project/issues/4803",
+      "files": [
+        "jetty-http2/http2-client/src/test/java/org/eclipse/jetty/http2/client/AbstractTest.java",
+        "jetty-http2/http2-client/src/test/java/org/eclipse/jetty/http2/client/ConcurrentStreamCreationTest.java",
+        "jetty-http2/http2-client/src/test/java/org/eclipse/jetty/http2/client/StreamCloseTest.java",
+        "jetty-http2/http2-common/src/main/java/org/eclipse/jetty/http2/HTTP2Session.java",
+        "jetty-http2/http2-common/src/main/java/org/eclipse/jetty/http2/frames/PushPromiseFrame.java",
+        "jetty-http2/http2-http-client-transport/src/main/java/org/eclipse/jetty/http2/client/http/HttpConnectionOverHTTP2.java",
+        "jetty-http2/http2-http-client-transport/src/test/java/org/eclipse/jetty/http2/client/http/PushedResourcesTest.java",
+        "jetty-http2/http2-server/src/main/java/org/eclipse/jetty/http2/server/HTTP2ServerConnection.java",
+        "jetty-http2/http2-server/src/main/java/org/eclipse/jetty/http2/server/HttpTransportOverHTTP2.java"
+      ]
+    },
+    {
+      "case_id": "J2",
+      "project": "jetty",
+      "repo": "jetty/jetty.project",
+      "commit_message": "Solve lock contention creating HTTP2 streams (#2188) while fixing race condition that breaks http channels recycling (#4695)",
+      "fix_sha": "6729a6f68907eeaa6e30919e6a1b1341ac04bf31",
+      "buggy_sha": "8fcbf6d590aabf681efbad7d3d5bf3bb83462503",
+      "dominant_pattern": "UL",
+      "all_smells": [
+        {
+          "pattern": "UL",
+          "detail": "lock 'this' guards ['append', 'createLocalStream', 'frame', 'getAndAdd', 'getMetaData', 'getParentStreamId', 'getPriority', 'getStreamId', 'getWeight', 'isEndStream', 'isExclusive', 'priority', 'queued', 'setListener', 'streamId'] across ['newStream', 'push']",
+          "file": "HTTP2Session.java"
+        },
+        {
+          "pattern": "UL",
+          "detail": "lock 'this' guards ['offer', 'poll'] across ['offerHttpChannel', 'pollHttpChannel']",
+          "file": "HTTP2ServerConnection.java"
+        },
+        {
+          "pattern": "UL",
+          "detail": "lock 'this' guards ['callback', 'commit', 'failure', 'result', 'state'] across ['failed', 'getInvocationType', 'onIdleTimeout', 'start', 'succeeded']",
+          "file": "HttpTransportOverHTTP2.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/jetty/jetty.project/commit/6729a6f68907eeaa6e30919e6a1b1341ac04bf31",
+      "issue_url": "https://github.com/jetty/jetty.project/issues/2188",
+      "files": [
+        "jetty-http2/http2-client/src/test/java/org/eclipse/jetty/http2/client/AbstractTest.java",
+        "jetty-http2/http2-client/src/test/java/org/eclipse/jetty/http2/client/ConcurrentStreamCreationTest.java",
+        "jetty-http2/http2-client/src/test/java/org/eclipse/jetty/http2/client/StreamCloseTest.java",
+        "jetty-http2/http2-common/src/main/java/org/eclipse/jetty/http2/HTTP2Session.java",
+        "jetty-http2/http2-common/src/main/java/org/eclipse/jetty/http2/frames/PushPromiseFrame.java",
+        "jetty-http2/http2-http-client-transport/src/main/java/org/eclipse/jetty/http2/client/http/HttpConnectionOverHTTP2.java",
+        "jetty-http2/http2-http-client-transport/src/test/java/org/eclipse/jetty/http2/client/http/PushedResourcesTest.java",
+        "jetty-http2/http2-server/src/main/java/org/eclipse/jetty/http2/server/HTTP2ServerConnection.java",
+        "jetty-http2/http2-server/src/main/java/org/eclipse/jetty/http2/server/HttpTransportOverHTTP2.java"
+      ]
+    },
+    {
+      "case_id": "J5",
+      "project": "jetty",
+      "repo": "jetty/jetty.project",
+      "commit_message": "Merged branch jetty-9.4.x-3361-thread-safe-setHandler",
+      "fix_sha": "97d501d4445f25073b256a80fde446d4b8f3a970",
+      "buggy_sha": "879b9f5d6ba23edbd3c0403d32f3baf1adc7e3c0",
+      "dominant_pattern": "LIC",
+      "all_smells": [
+        {
+          "pattern": "LIC",
+          "detail": "synchronized method 'onFillable' contains a loop",
+          "file": "SslConnectionTest.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/jetty/jetty.project/commit/97d501d4445f25073b256a80fde446d4b8f3a970",
+      "issue_url": "",
+      "files": [
+        "jetty-io/src/test/java/org/eclipse/jetty/io/SslConnectionTest.java"
+      ]
+    },
+    {
+      "case_id": "J6",
+      "project": "jetty",
+      "repo": "jetty/jetty.project",
+      "commit_message": "Issue #5147 - HTTP2 RoundRobinConnectionPool with maxUsage",
+      "fix_sha": "0af5f676cd401c693cef52c96c2d26fb277379e3",
+      "buggy_sha": "2d3f0e0c106fc53ab03367cf3058cd1aefae8c7e",
+      "dominant_pattern": "LOC",
+      "all_smells": [
+        {
+          "pattern": "OS",
+          "detail": "method 'process' splits lock(s) ['this']",
+          "file": "HttpReceiverOverHTTP2.java"
+        },
+        {
+          "pattern": "LOC",
+          "detail": "method 'process' has WhileStatement containing synchronized block",
+          "file": "HttpReceiverOverHTTP2.java"
+        },
+        {
+          "pattern": "UL",
+          "detail": "lock 'this' guards ['active', 'clear', 'dataInfo', 'debug', 'demand', 'isDebugEnabled', 'offer', 'poll', 'resume', 'stalled'] across ['active', 'enqueue', 'process', 'reset', 'stall']",
+          "file": "HttpReceiverOverHTTP2.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/jetty/jetty.project/commit/0af5f676cd401c693cef52c96c2d26fb277379e3",
+      "issue_url": "https://github.com/jetty/jetty.project/issues/5147",
+      "files": [
+        "jetty-client/src/main/java/org/eclipse/jetty/client/HttpDestination.java",
+        "jetty-client/src/main/java/org/eclipse/jetty/client/RoundRobinConnectionPool.java",
+        "jetty-http2/http2-http-client-transport/src/main/java/org/eclipse/jetty/http2/client/http/HttpChannelOverHTTP2.java",
+        "jetty-http2/http2-http-client-transport/src/main/java/org/eclipse/jetty/http2/client/http/HttpConnectionOverHTTP2.java",
+        "jetty-http2/http2-http-client-transport/src/main/java/org/eclipse/jetty/http2/client/http/HttpReceiverOverHTTP2.java",
+        "tests/test-http-client-transport/src/test/java/org/eclipse/jetty/http/client/RoundRobinConnectionPoolTest.java"
+      ]
+    },
+    {
+      "case_id": "J7",
+      "project": "jetty",
+      "repo": "jetty/jetty.project",
+      "commit_message": "Issue #5108 - use set based on ConcurrentHashMap and remove synchronized blocks",
+      "fix_sha": "85c4fc53350a8162496ed8c79dfc28215e5bb07e",
+      "buggy_sha": "d37501dce0c32c939dbe0cdb52fad37fac73c60a",
+      "dominant_pattern": "OS",
+      "all_smells": [
+        {
+          "pattern": "OS",
+          "file": "JsrSessionTracker.java",
+          "detail": "same lock (this) used in 3 separate synchronized blocks across getSessions/onSessionOpened/onSessionClosed"
+        }
+      ],
+      "github_commit_url": "https://github.com/jetty/jetty.project/commit/85c4fc53350a8162496ed8c79dfc28215e5bb07e",
+      "issue_url": "https://github.com/jetty/jetty.project/issues/5108",
+      "files": [
+        "jetty-websocket/javax-websocket-client-impl/src/main/java/org/eclipse/jetty/websocket/jsr356/JsrSessionTracker.java",
+        "jetty-websocket/websocket-common/src/main/java/org/eclipse/jetty/websocket/common/SessionTracker.java"
+      ]
+    },
+    {
+      "case_id": "J8",
+      "project": "jetty",
+      "repo": "jetty/jetty.project",
+      "commit_message": "Fixes #1836 - Review Locker.",
+      "fix_sha": "7768a781bec1c0686906649f241ead99776a40cd",
+      "buggy_sha": "d4cd8c13e90439a1edd4dcf48c80dade1f3f6eb8",
+      "dominant_pattern": "SM",
+      "all_smells": [
+        {
+          "pattern": "SM",
+          "detail": "method 'join' calls lock() but never unlock()",
+          "file": "AbstractConnector.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'isAccepting' calls lock() but never unlock()",
+          "file": "AbstractConnector.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'setAccepting' calls lock() but never unlock()",
+          "file": "AbstractConnector.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'getConnectionFactory' calls lock() but never unlock()",
+          "file": "AbstractConnector.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'getConnectionFactory' calls lock() but never unlock()",
+          "file": "AbstractConnector.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'addFirstConnectionFactory' calls lock() but never unlock()",
+          "file": "AbstractConnector.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'addIfAbsentConnectionFactory' calls lock() but never unlock()",
+          "file": "AbstractConnector.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'removeConnectionFactory' calls lock() but never unlock()",
+          "file": "AbstractConnector.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'getConnectionFactories' calls lock() but never unlock()",
+          "file": "AbstractConnector.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'setConnectionFactories' calls lock() but never unlock()",
+          "file": "AbstractConnector.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'run' calls lock() but never unlock()",
+          "file": "AbstractConnector.java"
+        },
+        {
+          "pattern": "OS",
+          "detail": "method 'clearConnectionFactories': synchronized block with single statement — candidate for Atomic",
+          "file": "AbstractConnector.java"
+        },
+        {
+          "pattern": "OS",
+          "detail": "method 'run': synchronized block with single statement — candidate for Atomic",
+          "file": "AbstractConnector.java"
+        },
+        {
+          "pattern": "OS",
+          "detail": "method 'run': synchronized block with single statement — candidate for Atomic",
+          "file": "AbstractConnector.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'lock' calls lock() but never unlock()",
+          "file": "Session.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'lock' calls lock() but never unlock()",
+          "file": "Locker.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'lockIfNotHeld' calls lock() but never unlock()",
+          "file": "Locker.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/jetty/jetty.project/commit/7768a781bec1c0686906649f241ead99776a40cd",
+      "issue_url": "https://github.com/jetty/jetty.project/issues/1836",
+      "files": [
+        "jetty-server/src/main/java/org/eclipse/jetty/server/AbstractConnector.java",
+        "jetty-server/src/main/java/org/eclipse/jetty/server/session/Session.java",
+        "jetty-util/src/main/java/org/eclipse/jetty/util/thread/Locker.java"
+      ]
+    },
+    {
+      "case_id": "J9",
+      "project": "jetty",
+      "repo": "jetty/jetty.project",
+      "commit_message": "fix deadlock between HttpInput's lock and BlockingContentProducer's semaphore",
+      "fix_sha": "59b397b1a07ac0b71ef7f4c3cfc354d05285c057",
+      "buggy_sha": "14108c8e58214164cea5e3304106a3a00f9a5258",
+      "dominant_pattern": "SM",
+      "all_smells": [
+        {
+          "pattern": "SEM",
+          "detail": "method 'nextContent': Semaphore.acquire() with no release()",
+          "file": "BlockingContentProducer.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'getInterceptor' calls lock() but never unlock()",
+          "file": "HttpInput.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'setInterceptor' calls lock() but never unlock()",
+          "file": "HttpInput.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'addInterceptor' calls lock() but never unlock()",
+          "file": "HttpInput.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'getContentReceived' calls lock() but never unlock()",
+          "file": "HttpInput.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'consumeAll' calls lock() but never unlock()",
+          "file": "HttpInput.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'isError' calls lock() but never unlock()",
+          "file": "HttpInput.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'isReady' calls lock() but never unlock()",
+          "file": "HttpInput.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'read' calls lock() but never unlock()",
+          "file": "HttpInput.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'read' calls lock() but never unlock()",
+          "file": "HttpInput.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'hasContent' calls lock() but never unlock()",
+          "file": "HttpInput.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'available' calls lock() but never unlock()",
+          "file": "HttpInput.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'run' calls lock() but never unlock()",
+          "file": "HttpInput.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/jetty/jetty.project/commit/59b397b1a07ac0b71ef7f4c3cfc354d05285c057",
+      "issue_url": "",
+      "files": [
+        "jetty-server/src/main/java/org/eclipse/jetty/server/AsyncContentProducer.java",
+        "jetty-server/src/main/java/org/eclipse/jetty/server/BlockingContentProducer.java",
+        "jetty-server/src/main/java/org/eclipse/jetty/server/ContentProducer.java",
+        "jetty-server/src/main/java/org/eclipse/jetty/server/HttpInput.java",
+        "jetty-server/src/test/java/org/eclipse/jetty/server/AsyncContentProducerTest.java",
+        "jetty-server/src/test/java/org/eclipse/jetty/server/BlockingContentProducerTest.java"
+      ]
+    },
+    {
+      "case_id": "K1",
+      "project": "kafka",
+      "repo": "apache/kafka",
+      "commit_message": "KAFKA-6593; Fix livelock with consumer heartbeat thread in commitSync (#4625)",
+      "fix_sha": "6cfcc9d553622e7d511a849935e9b504f947399d",
+      "buggy_sha": "eb449fe7c55a0816328a851fc1102dfeac6d8616",
+      "dominant_pattern": "SM",
+      "all_smells": [
+        {
+          "pattern": "SM",
+          "detail": "class 'AbstractCoordinator' has synchronized methods ['ensureCoordinatorReady', 'ensureCoordinatorReady', 'lookupCoordinator', 'clearFindCoordinatorFuture', 'needRejoin', 'rejoinIncomplete', 'pollHeartbeat', 'timeToNextHeartbeat', 'startHeartbeatThreadIfNeeded', 'disableHeartbeatThread', 'resetJoinGroupFuture', 'initiateJoinGroup', 'coordinator', 'coordinatorDead', 'generation', 'resetGeneration', 'requestRejoin', 'maybeLeaveGroup', 'sendHeartbeatRequest']",
+          "file": "AbstractCoordinator.java"
+        },
+        {
+          "pattern": "NL",
+          "detail": "method 'run' has nested synchronized blocks",
+          "file": "AbstractCoordinator.java"
+        },
+        {
+          "pattern": "OS",
+          "detail": "method 'initiateJoinGroup' splits lock(s) ['this']",
+          "file": "AbstractCoordinator.java"
+        },
+        {
+          "pattern": "OS",
+          "detail": "method 'run' splits lock(s) ['this']",
+          "file": "AbstractCoordinator.java"
+        },
+        {
+          "pattern": "LIC",
+          "detail": "synchronized method 'ensureCoordinatorReady' contains a loop",
+          "file": "AbstractCoordinator.java"
+        },
+        {
+          "pattern": "LOC",
+          "detail": "method 'run' has WhileStatement containing synchronized block",
+          "file": "AbstractCoordinator.java"
+        },
+        {
+          "pattern": "UL",
+          "detail": "lock 'this' guards ['addListener', 'awaitPendingRequests', 'chain', 'close', 'coordinator', 'coordinatorDead', 'coordinatorUnknown', 'debug', 'disable', 'enable', 'failHeartbeat', 'failed', 'generationId', 'groupProtocol', 'heartbeatThread', 'host', 'id', 'info', 'isLeader', 'lookupCoordinator', 'maybeLeaveGroup', 'memberId', 'milliseconds', 'node', 'notify', 'onJoinFollower', 'onJoinLeader', 'pendingRequestCount', 'pollNoWakeup', 'pollTimeoutExpired', 'port', 'raise', 'receiveHeartbeat', 'rejoinNeeded', 'resetTimeouts', 'sendHeartbeatRequest', 'sentHeartbeat', 'sessionTimeoutExpired', 'shouldHeartbeat', 'state', 'thread', 'tryConnect', 'wait', 'warn'] across ['close', 'closeHeartbeatThread', 'disable', 'enable', 'handle', 'onFailure', 'onSuccess', 'run']",
+          "file": "AbstractCoordinator.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "class 'ConsumerNetworkClient' has synchronized methods ['leastLoadedNode', 'hasReadyNodes']",
+          "file": "ConsumerNetworkClient.java"
+        },
+        {
+          "pattern": "LIC",
+          "detail": "synchronized block in 'failUnsentRequests' contains a loop",
+          "file": "ConsumerNetworkClient.java"
+        },
+        {
+          "pattern": "LIC",
+          "detail": "synchronized block in 'clean' contains a loop",
+          "file": "ConsumerNetworkClient.java"
+        },
+        {
+          "pattern": "UL",
+          "detail": "lock 'this' guards ['callback', 'checkDisconnects', 'clean', 'close', 'connectionFailed', 'disconnect', 'failExpiredRequests', 'hasInFlightRequests', 'idString', 'inFlightRequestCount', 'maybeThrowInterruptException', 'maybeTriggerWakeup', 'milliseconds', 'min', 'now', 'onFailure', 'poll', 'ready', 'remove', 'requestCount', 'shouldBlock', 'timeout', 'trySend'] across ['close', 'connectionFailed', 'disconnect', 'failUnsentRequests', 'hasPendingRequests', 'pendingRequestCount', 'poll', 'tryConnect']",
+          "file": "ConsumerNetworkClient.java"
+        },
+        {
+          "pattern": "UL",
+          "detail": "lock 'unsent' guards ['Collections', 'add', 'get', 'hasNext', 'isEmpty', 'iterator', 'next', 'put', 'remove', 'requests', 'values'] across ['clean', 'put', 'remove']",
+          "file": "ConsumerNetworkClient.java"
+        },
+        {
+          "pattern": "SL",
+          "detail": "mutable field 'unsent' used as lock in ['clean', 'put', 'remove']",
+          "file": "ConsumerNetworkClient.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/apache/kafka/commit/6cfcc9d553622e7d511a849935e9b504f947399d",
+      "issue_url": "https://issues.apache.org/jira/browse/KAFKA-6593",
+      "files": [
+        "clients/src/main/java/org/apache/kafka/clients/consumer/internals/AbstractCoordinator.java",
+        "clients/src/main/java/org/apache/kafka/clients/consumer/internals/ConsumerCoordinator.java",
+        "clients/src/main/java/org/apache/kafka/clients/consumer/internals/ConsumerNetworkClient.java",
+        "clients/src/test/java/org/apache/kafka/clients/MockClient.java",
+        "clients/src/test/java/org/apache/kafka/clients/consumer/internals/ConsumerCoordinatorTest.java",
+        "clients/src/test/java/org/apache/kafka/clients/consumer/internals/ConsumerNetworkClientTest.java"
+      ]
+    },
+    {
+      "case_id": "K2",
+      "project": "kafka",
+      "repo": "apache/kafka",
+      "commit_message": "KAFKA-13630: Reduce amount of time that producer network thread holds batch queue lock (#11722)",
+      "fix_sha": "2367c8994be1751950d989edb6ff62b10d98a03d",
+      "buggy_sha": "add11eed752e3ee912e469245cc7cf56914ae07f",
+      "dominant_pattern": "LIC",
+      "all_smells": [
+        {
+          "pattern": "OS",
+          "detail": "method 'append' splits lock(s) ['dq']",
+          "file": "RecordAccumulator.java"
+        },
+        {
+          "pattern": "LIC",
+          "detail": "synchronized block in 'expiredBatches' contains a loop",
+          "file": "RecordAccumulator.java"
+        },
+        {
+          "pattern": "LOC",
+          "detail": "method 'expiredBatches' has ForStatement containing synchronized block",
+          "file": "RecordAccumulator.java"
+        },
+        {
+          "pattern": "LOC",
+          "detail": "method 'splitAndReenqueue' has WhileStatement containing synchronized block",
+          "file": "RecordAccumulator.java"
+        },
+        {
+          "pattern": "LOC",
+          "detail": "method 'ready' has ForStatement containing synchronized block",
+          "file": "RecordAccumulator.java"
+        },
+        {
+          "pattern": "LOC",
+          "detail": "method 'hasUndrained' has ForStatement containing synchronized block",
+          "file": "RecordAccumulator.java"
+        },
+        {
+          "pattern": "LOC",
+          "detail": "method 'drainBatchesForOneNode' has DoStatement containing synchronized block",
+          "file": "RecordAccumulator.java"
+        },
+        {
+          "pattern": "LOC",
+          "detail": "method 'abortBatches' has ForStatement containing synchronized block",
+          "file": "RecordAccumulator.java"
+        },
+        {
+          "pattern": "LOC",
+          "detail": "method 'abortUndrainedBatches' has ForStatement containing synchronized block",
+          "file": "RecordAccumulator.java"
+        },
+        {
+          "pattern": "UL",
+          "detail": "lock 'dq' guards ['abortRecordAppends', 'aborted', 'add', 'addLast', 'buffer', 'hasSequence', 'isClosed', 'isFull', 'recordsBuilder', 'remove', 'requireNonNull', 'size', 'tryAppend'] across ['abortBatches', 'abortUndrainedBatches', 'append']",
+          "file": "RecordAccumulator.java"
+        },
+        {
+          "pattern": "UL",
+          "detail": "lock 'deque' guards ['abortRecordAppends', 'add', 'addFirst', 'addInFlightBatch', 'attempts', 'baseSequence', 'close', 'contains', 'debug', 'drained', 'estimatedSizeInBytes', 'flushInProgress', 'getFirst', 'getKey', 'hasReachedDeliveryTimeout', 'hasSequence', 'incrementSequenceNumber', 'insertInSequenceOrder', 'isCompleting', 'isEmpty', 'isFull', 'isMuted', 'isTransactional', 'leaderFor', 'max', 'maybeUpdateNextBatchExpiryTime', 'maybeUpdateProducerIdAndEpoch', 'min', 'nextReadyCheckDelayMs', 'peekFirst', 'poll', 'pollFirst', 'producerIdAndEpoch', 'records', 'sequenceNumber', 'setProducerState', 'shouldStopDrainBatchesForPartition', 'size', 'sizeInBytes', 'topic', 'waitedTimeMs'] across ['drainBatchesForOneNode', 'expiredBatches', 'hasUndrained', 'ready', 'reenqueue']",
+          "file": "RecordAccumulator.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/apache/kafka/commit/2367c8994be1751950d989edb6ff62b10d98a03d",
+      "issue_url": "https://issues.apache.org/jira/browse/KAFKA-13630",
+      "files": [
+        "clients/src/main/java/org/apache/kafka/clients/producer/internals/RecordAccumulator.java"
+      ]
+    },
+    {
+      "case_id": "K4",
+      "project": "kafka",
+      "repo": "apache/kafka",
+      "commit_message": "KAFKA-5820: Remove unneeded synchronized keyword in StreamThread",
+      "fix_sha": "a1ec6527db808679330a54e802c4ae1630e6b50d",
+      "buggy_sha": "674407908b898dd18b447447ad3346b5268b1dfc",
+      "dominant_pattern": "SM",
+      "all_smells": [
+        {
+          "pattern": "SM",
+          "detail": "class 'StreamThread' has synchronized methods ['isRunningAndNotRebalancing', 'isRunning', 'shutdown']",
+          "file": "StreamThread.java"
+        },
+        {
+          "pattern": "UL",
+          "detail": "lock 'stateLock' guards ['activeTasks', 'error', 'info', 'isValidTransition', 'standbyTasks', 'state', 'updateThreadMetadata'] across ['isRunning', 'setState']",
+          "file": "StreamThread.java"
+        },
+        {
+          "pattern": "SL",
+          "detail": "mutable field 'stateLock' used as lock in ['isRunning', 'setState']",
+          "file": "StreamThread.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/apache/kafka/commit/a1ec6527db808679330a54e802c4ae1630e6b50d",
+      "issue_url": "https://issues.apache.org/jira/browse/KAFKA-5820",
+      "files": [
+        "streams/src/main/java/org/apache/kafka/streams/processor/internals/StreamThread.java"
+      ]
+    },
+    {
+      "case_id": "K5",
+      "project": "kafka",
+      "repo": "apache/kafka",
+      "commit_message": "KAFKA-7136: Avoid deadlocks in synchronized metrics reporters (#5341)",
+      "fix_sha": "1f8527b331f3d4c8e3ea16993d96caae2ea18fc5",
+      "buggy_sha": "1aea0834d346f0afa16f946c47e51fefac37612b",
+      "dominant_pattern": "SM",
+      "all_smells": [
+        {
+          "pattern": "SM",
+          "detail": "class 'Sensor' has synchronized methods ['add', 'add', 'metrics']",
+          "file": "Sensor.java"
+        },
+        {
+          "pattern": "LIC",
+          "detail": "synchronized method 'add' contains a loop",
+          "file": "Sensor.java"
+        },
+        {
+          "pattern": "LIC",
+          "detail": "synchronized block in 'record' contains a loop",
+          "file": "Sensor.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/apache/kafka/commit/1f8527b331f3d4c8e3ea16993d96caae2ea18fc5",
+      "issue_url": "https://issues.apache.org/jira/browse/KAFKA-7136",
+      "files": [
+        "clients/src/main/java/org/apache/kafka/common/metrics/Sensor.java",
+        "clients/src/test/java/org/apache/kafka/common/metrics/MetricsTest.java"
+      ]
+    },
+    {
+      "case_id": "K6",
+      "project": "kafka",
+      "repo": "apache/kafka",
+      "commit_message": "MINOR: Fix deadlock between StreamThread and KafkaStreams",
+      "fix_sha": "3364f12bc240e3fefa6a467519ef608fa768917c",
+      "buggy_sha": "bdf4cba047334943aa8357585c4fb379b27e9ffd",
+      "dominant_pattern": "SM",
+      "all_smells": [
+        {
+          "pattern": "SM",
+          "detail": "class 'KafkaStreams' has synchronized methods ['setState', 'state', 'start', 'close']",
+          "file": "KafkaStreams.java"
+        },
+        {
+          "pattern": "LIC",
+          "detail": "synchronized method 'onChange' contains a loop",
+          "file": "KafkaStreams.java"
+        },
+        {
+          "pattern": "LIC",
+          "detail": "synchronized method 'start' contains a loop",
+          "file": "KafkaStreams.java"
+        },
+        {
+          "pattern": "LIC",
+          "detail": "synchronized method 'close' contains a loop",
+          "file": "KafkaStreams.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "class 'StreamThread' has synchronized methods ['state', 'setState', 'setStateWhenNotInPendingShutdown', 'isInitialized', 'close', 'stillRunning']",
+          "file": "StreamThread.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/apache/kafka/commit/3364f12bc240e3fefa6a467519ef608fa768917c",
+      "issue_url": "",
+      "files": [
+        "clients/src/main/java/org/apache/kafka/clients/producer/KafkaProducer.java",
+        "streams/src/main/java/org/apache/kafka/streams/KafkaStreams.java",
+        "streams/src/main/java/org/apache/kafka/streams/processor/internals/StreamThread.java",
+        "streams/src/test/java/org/apache/kafka/streams/KafkaStreamsTest.java"
+      ]
+    },
+    {
+      "case_id": "K7",
+      "project": "kafka",
+      "repo": "apache/kafka",
+      "commit_message": "KAFKA-14365: Extract common logic from Fetcher (#13425)",
+      "fix_sha": "a3252629a37344be1f1f86a77cf685f9c147be4d",
+      "buggy_sha": "ed400e4c0d779dcb0b6fe438594328e81b1a49db",
+      "dominant_pattern": "LIC",
+      "all_smells": [
+        {
+          "pattern": "OS",
+          "detail": "method 'sendFetches' splits lock(s) ['this']",
+          "file": "Fetcher.java"
+        },
+        {
+          "pattern": "LIC",
+          "detail": "synchronized method 'sendFetches' contains a loop",
+          "file": "Fetcher.java"
+        },
+        {
+          "pattern": "LIC",
+          "detail": "synchronized block in 'onSuccess' contains a loop",
+          "file": "Fetcher.java"
+        },
+        {
+          "pattern": "LOC",
+          "detail": "method 'sendFetches' has ForStatement containing synchronized block",
+          "file": "Fetcher.java"
+        },
+        {
+          "pattern": "UL",
+          "detail": "lock 'this' guards ['add', 'apiVersion', 'arrayFormat', 'clear', 'closeQuietly', 'debug', 'disableWakeups', 'drain', 'entrySet', 'error', 'forEach', 'get', 'getKey', 'getMessage', 'getValue', 'handleError', 'handleResponse', 'id', 'isFull', 'keySet', 'maybeCloseFetchSessions', 'message', 'metadata', 'recordLatency', 'remove', 'requestHeader', 'requestLatencyMs', 'requestUpdate', 'responseBody', 'responseData', 'sessionHandler', 'sessionPartitions', 'sessionTopicNames', 'sessionTopicPartitions', 'toForget', 'toReplace', 'toSend'] across ['close', 'onFailure', 'onSuccess']",
+          "file": "Fetcher.java"
+        },
+        {
+          "pattern": "OS",
+          "detail": "method 'testFetcherConcurrency' splits lock(s) ['consumerClient']",
+          "file": "FetcherTest.java"
+        },
+        {
+          "pattern": "OS",
+          "detail": "method 'testFetcherSessionEpochUpdate' splits lock(s) ['consumerClient']",
+          "file": "FetcherTest.java"
+        },
+        {
+          "pattern": "LIC",
+          "detail": "synchronized block in 'testFetcherConcurrency' contains a loop",
+          "file": "FetcherTest.java"
+        },
+        {
+          "pattern": "LOC",
+          "detail": "method 'testFetcherConcurrency' has WhileStatement containing synchronized block",
+          "file": "FetcherTest.java"
+        },
+        {
+          "pattern": "LOC",
+          "detail": "method 'testFetcherConcurrency' has WhileStatement containing synchronized block",
+          "file": "FetcherTest.java"
+        },
+        {
+          "pattern": "LOC",
+          "detail": "method 'testFetcherSessionEpochUpdate' has WhileStatement containing synchronized block",
+          "file": "FetcherTest.java"
+        },
+        {
+          "pattern": "LOC",
+          "detail": "method 'testFetcherSessionEpochUpdate' has WhileStatement containing synchronized block",
+          "file": "FetcherTest.java"
+        },
+        {
+          "pattern": "UL",
+          "detail": "lock 'consumerClient' guards ['assertTrue', 'build', 'buildRecords', 'entrySet', 'epoch', 'fetchData', 'format', 'getKey', 'getValue', 'isEmpty', 'metadata', 'nextOffset', 'of', 'partition', 'peek', 'poll', 'put', 'requestBuilder', 'requests', 'respondToRequest', 'setHighWatermark', 'setLastStableOffset', 'setLogStartOffset', 'setPartitionIndex', 'setRecords', 'timer', 'topicPartition'] across ['testFetcherConcurrency', 'testFetcherSessionEpochUpdate']",
+          "file": "FetcherTest.java"
+        },
+        {
+          "pattern": "SL",
+          "detail": "mutable field 'consumerClient' used as lock in ['testFetcherConcurrency', 'testFetcherSessionEpochUpdate']",
+          "file": "FetcherTest.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/apache/kafka/commit/a3252629a37344be1f1f86a77cf685f9c147be4d",
+      "issue_url": "https://issues.apache.org/jira/browse/KAFKA-14365",
+      "files": [
+        "clients/src/main/java/org/apache/kafka/clients/CommonClientConfigs.java",
+        "clients/src/main/java/org/apache/kafka/clients/consumer/ConsumerConfig.java",
+        "clients/src/main/java/org/apache/kafka/clients/consumer/KafkaConsumer.java",
+        "clients/src/main/java/org/apache/kafka/clients/consumer/internals/AbstractFetch.java",
+        "clients/src/main/java/org/apache/kafka/clients/consumer/internals/CompletedFetch.java",
+        "clients/src/main/java/org/apache/kafka/clients/consumer/internals/FetchConfig.java",
+        "clients/src/main/java/org/apache/kafka/clients/consumer/internals/FetchMetricsManager.java",
+        "clients/src/main/java/org/apache/kafka/clients/consumer/internals/Fetcher.java",
+        "clients/src/test/java/org/apache/kafka/clients/consumer/KafkaConsumerTest.java",
+        "clients/src/test/java/org/apache/kafka/clients/consumer/internals/CompletedFetchTest.java",
+        "clients/src/test/java/org/apache/kafka/clients/consumer/internals/FetcherTest.java",
+        "clients/src/test/java/org/apache/kafka/clients/consumer/internals/OffsetFetcherTest.java"
+      ]
+    },
+    {
+      "case_id": "K8",
+      "project": "kafka",
+      "repo": "apache/kafka",
+      "commit_message": "KAFKA-9668: Iterating over KafkaStreams.getAllMetadata() results in ConcurrentModificationException (#8233)",
+      "fix_sha": "ca90a8480183bf287d07baf6b3794bc51f76b89e",
+      "buggy_sha": "6b419933a09513d10e57a1909c7c06f43dc472f2",
+      "dominant_pattern": "SM",
+      "all_smells": [
+        {
+          "pattern": "SM",
+          "detail": "class 'StreamsMetadataState' has synchronized methods ['getLocalMetadata', 'getAllMetadata', 'getAllMetadataForStore', 'getMetadataWithKey', 'getKeyQueryMetadataForKey', 'getKeyQueryMetadataForKey', 'getMetadataWithKey', 'onChange']",
+          "file": "StreamsMetadataState.java"
+        },
+        {
+          "pattern": "LIC",
+          "detail": "synchronized method 'getAllMetadataForStore' contains a loop",
+          "file": "StreamsMetadataState.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/apache/kafka/commit/ca90a8480183bf287d07baf6b3794bc51f76b89e",
+      "issue_url": "https://issues.apache.org/jira/browse/KAFKA-9668",
+      "files": [
+        "streams/src/main/java/org/apache/kafka/streams/processor/internals/StreamsMetadataState.java",
+        "streams/src/main/java/org/apache/kafka/streams/state/StreamsMetadata.java",
+        "streams/src/test/java/org/apache/kafka/streams/processor/internals/StreamsMetadataStateTest.java",
+        "streams/src/test/java/org/apache/kafka/streams/state/StreamsMetadataTest.java"
+      ]
+    },
+    {
+      "case_id": "K9",
+      "project": "kafka",
+      "repo": "apache/kafka",
+      "commit_message": "KAFKA-15400: Use readLock when removing an item from the RemoteIndexCache (#14283)",
+      "fix_sha": "88d2c4460a1c8c8cf5dbcc9edb43f42fe898ca00",
+      "buggy_sha": "25b128de81f826d0e0fe415acecf8b6d4cf837f4",
+      "dominant_pattern": "SM",
+      "all_smells": [
+        {
+          "pattern": "SM",
+          "detail": "method 'remove' uses writeLock() but makes no assignments — readLock() suffices",
+          "file": "RemoteIndexCache.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'removeAll' uses writeLock() but makes no assignments — readLock() suffices",
+          "file": "RemoteIndexCache.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'close' uses writeLock() but makes no assignments — readLock() suffices",
+          "file": "RemoteIndexCache.java"
+        },
+        {
+          "pattern": "SM",
+          "detail": "method 'close' uses writeLock() but makes no assignments — readLock() suffices",
+          "file": "RemoteIndexCache.java"
+        }
+      ],
+      "github_commit_url": "https://github.com/apache/kafka/commit/88d2c4460a1c8c8cf5dbcc9edb43f42fe898ca00",
+      "issue_url": "https://issues.apache.org/jira/browse/KAFKA-15400",
+      "files": [
+        "storage/src/main/java/org/apache/kafka/storage/internals/log/RemoteIndexCache.java"
+      ]
+    }
+  ]
+}

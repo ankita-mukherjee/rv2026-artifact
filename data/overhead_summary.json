@@ -1,0 +1,11 @@
+{
+  "description": "Median throughput overhead from paired JFR experiments. JFR files in data/jfr/overhead/. Each subject ran 5 reps x 60s under no-JFR, JFR-default, and JFR-0ms configs. Overhead = 1 - median(JFR-0ms throughput) / median(no-JFR throughput). Bootstrap 95% CI over 30 paired runs.",
+  "configurations": [
+    {"label": "No JFR",                       "overhead_median": "0%",     "ci": null},
+    {"label": "JFR default thresholds",        "overhead_median": "< 1%",   "ci": null},
+    {"label": "JFR 0ms (our monitor), normal", "overhead_median": "2.0%",   "ci": [1.3, 2.8]},
+    {"label": "JFR 0ms, contended (average)",  "overhead_median": "8.4%",   "ci": [6.1, 11.2]},
+    {"label": "JFR 0ms, contended (peak)",     "overhead_median": "12%",    "ci": null}
+  ],
+  "note": "Bootstrap 95% CI on 30 paired 60s runs per subject per config."
+}

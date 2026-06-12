@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration version="2.0" label="rv2026" description="RV2026 monitoring config">
+  <event name="jdk.JavaMonitorEnter">
+    <setting name="enabled">true</setting>
+    <setting name="threshold">0 ms</setting>
+    <setting name="stackTrace">true</setting>
+  </event>
+  <event name="jdk.ThreadPark">
+    <setting name="enabled">true</setting>
+    <setting name="threshold">0 ms</setting>
+    <setting name="stackTrace">true</setting>
+  </event>
+</configuration>
