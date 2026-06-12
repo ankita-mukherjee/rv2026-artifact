@@ -12,7 +12,7 @@ imported modules.
 
 | File | Role |
 |------|------|
-| `step1_parse_real_jfr.py` | Entry point. Parses the real `.jfr` recordings under `data/jfr/{K2,C5,J7,H2}/` and prints per-episode severity + the order-statistic verdict. Needs Java 21 `jfr` on `PATH`. |
+| `step1_parse_jfr.py` | Entry point. Parses the real `.jfr` recordings under `data/jfr/{K2,C5,J7,H2}/` and prints per-episode severity + the order-statistic verdict. Needs Java 21 `jfr` on `PATH`. |
 | `step2_live_experiment.py` | Entry point (optional). Runs a live JVM episode against an installed subject. Requires the full project repo (`src/run_experiments.py`) + compiled subject + workload tool. |
 | `robustness.py` | Core verdict logic: `Episode`, `Contract`, episodic robustness vector, order-statistic verdict, baseline calibration, binomial coverage (Sections 4–5). |
 | `jfr_parser.py` | JFR event parser for `jdk.JavaMonitorEnter` and `jdk.ThreadPark`; turns a `.jfr` file into an `Episode`. |
