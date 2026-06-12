@@ -68,10 +68,30 @@ Verdict parameters:
 
 ## Dependencies
 
-- **Python 3.9+** — stdlib only, no `pip install` required.
-- **Java 21 JDK** with `jfr` on `PATH` — for `step1`/`step2` (JFR parsing /
-  live runs).
+- **Python 3.9+** — stdlib only, no `pip install` required (`subprocess`, `re`).
+- **Java JDK with the `jfr` CLI** — for `step1`/`step2`. Details below.
 - **Ollama + Qwen 2.5 Coder 32B** — only for the repair demonstration below.
+
+### JFR tooling (for `step1_parse_jfr.py`)
+
+`step1` shells out to the JDK's `jfr` command and regex-parses its text output:
+
+```bash
+jfr print --events jdk.JavaMonitorEnter,jdk.ThreadPark <file>.jfr
+```
+
+- **Needs a full JDK, not a JRE.** The `jfr` binary ships only with the JDK
+  (`$JDK/bin/jfr`); a JRE does not include it.
+- **Version: JDK 21 recommended; JDK ≥ 14 works.** The bundled recordings are
+  JFR chunk format **v2.1**, readable by any `jfr print` from JDK 14 onward.
+  Recordings were produced on OpenJDK 17 and parsed on JDK 21 — both fine.
+  Avoid JDK 11 (may not read format 2.1).
+- **Discovery** (`jfr_parser._find_jfr_binary`): tries `$JAVA_HOME/bin/jfr`,
+  then `jfr` beside `java` on `PATH`, then bare `jfr`. Set `JAVA_HOME` or put
+  `java` on `PATH` and it resolves automatically.
+- **Events used:** `jdk.JavaMonitorEnter` (contended `synchronized` entry; its
+  `duration` = blocked time → severity) and `jdk.ThreadPark`
+  (`LockSupport.park`, used by `ReentrantLock`; fed to the classifier).
 
 ---
 
