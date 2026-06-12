@@ -7,12 +7,11 @@ recordings, pre-computed results, and the lock-smell repair demonstration.
 
 ## Scripts — what each one does
 
-All under `scripts/`. The first three are runnable entry points; the rest are
+All under `scripts/`. The first two are runnable entry points; the rest are
 imported modules.
 
 | File | Role |
 |------|------|
-| `reproduce_all.py` | Entry point. Reads `data/results/result_*.json` and prints every paper table (coverage, accuracy, ablation, autocorrelation, per-case appendix, match check). Stdlib only. |
 | `step1_parse_real_jfr.py` | Entry point. Parses the real `.jfr` recordings under `data/jfr/{K2,C5,J7,H2}/` and prints per-episode severity + the order-statistic verdict. Needs Java 21 `jfr` on `PATH`. |
 | `step2_live_experiment.py` | Entry point (optional). Runs a live JVM episode against an installed subject. Requires the full project repo (`src/run_experiments.py`) + compiled subject + workload tool. |
 | `robustness.py` | Core verdict logic: `Episode`, `Contract`, episodic robustness vector, order-statistic verdict, baseline calibration, binomial coverage (Sections 4–5). |
@@ -31,7 +30,7 @@ Under `data/`:
 |------|----------|
 | `corpus/fault_corpus.json` | 30 historical fault pairs: `case_id`, `project`, `fix_sha`, `buggy_sha`, `github_commit_url`, `issue_url`, `smell_type` (SM/UL/LIC/LOC/OS), `real_jfr`. |
 | `corpus/workload_config.json` | Per-subject workload parameters (Table 2). |
-| `results/result_*.json` | Pre-computed episode data + verdicts for all 30 fault pairs (input to `reproduce_all.py`). |
+| `results/result_*.json` | Pre-computed episode data + verdicts for all 30 fault pairs. |
 | `jfr/{K2,C5,H2,J7}/` | Real JFR recordings for the 4 hardware experiments: 8 buggy + 8 clean episodes each. |
 | `jfr/overhead/` | Raw JFR overhead recordings (4 subjects × 2 configs). Provenance only — not read by any script. |
 | `overhead_summary.json` | Aggregated overhead numbers reported in Section 6.2. |
@@ -69,9 +68,9 @@ Verdict parameters:
 
 ## Dependencies
 
-- **Python 3.9+** — stdlib only. No `pip install` required for `reproduce_all.py`.
-- **Java 21 JDK** with `jfr` on `PATH` — only for `step1`/`step2` (JFR parsing /
-  live runs). Not needed to reproduce the tables.
+- **Python 3.9+** — stdlib only, no `pip install` required.
+- **Java 21 JDK** with `jfr` on `PATH` — for `step1`/`step2` (JFR parsing /
+  live runs).
 - **Ollama + Qwen 2.5 Coder 32B** — only for the repair demonstration below.
 
 ---
